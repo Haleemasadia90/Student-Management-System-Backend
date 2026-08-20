@@ -1,7 +1,11 @@
+
 package com.mfsys.crud.services;
 
+import com.mfsys.crud.Entity.Course;
 import com.mfsys.crud.Entity.Student;
+import com.mfsys.crud.Repository.CourseRepo;
 import com.mfsys.crud.Repository.StudentRepo;
+import com.mfsys.crud.dto.StudentResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,54 +13,57 @@ import java.util.List;
 @Service
 public class StudentsService {
     private final StudentRepo studentRepo;
+    private final CourseRepo courseRepo;
 
-    public  StudentsService(StudentRepo studentRepo)
-    {
-        this.studentRepo=studentRepo;
+    public StudentsService(StudentRepo studentRepo, CourseRepo courseRepo) {
+        this.studentRepo = studentRepo;
+        this.courseRepo = courseRepo;
     }
 
-    public List<Student> getAllStudents()
-    {
-        return studentRepo.findAll();
+    public List<StudentResponseDto> getAllStudents() {
+        return studentRepo.findAll()
+                .stream()
+                .map(this::convertToDto)
+                .toList();
     }
 
-
-    public List<Student> createStudents(List<Student> student) {
-        return studentRepo.saveAll(student);
+    public StudentResponseDto getStudentById(int id) {
+        Student student = studentRepo.findById((long) id).orElse(null);
+        if (student == null) return null;
+        return convertToDto(student);
     }
 
-    public  Student getStudentbyId(int id)
+    public StudentResponseDto getStudentByEmail(String email)
     {
-
-        return studentRepo.findById((long) id).orElse(null);
+        Student student = studentRepo.findByUser_Email(email).orElse(null);
+    if(student == null) return null;
+    return convertToDto(student);
     }
 
-    public Student updateStudent(int id,Student newData)
-    {
-        Student existStudent= studentRepo.findById((long) id).orElse(null);
-        if(existStudent!=null)
-        {
-            existStudent.setFname(newData.getFname());
-            existStudent.setEmail(newData.getEmail());
-            return studentRepo.save(existStudent);
-        }
-        return null;
+    public void deleteStudent(int id) {
+        studentRepo.deleteById((long) id);
     }
 
-    public void deleteStudent(int id)
+    public StudentResponseDto assignCourse(int studentId, Long courseId)
     {
-      studentRepo.deleteById((long) id);
+        Student student = studentRepo.findById((long) studentId).orElseThrow(()-> new RuntimeException("Student not found"));
+
+        Course course = courseRepo.findById(courseId).orElseThrow(()->new RuntimeException("Course not found"));
+
+        student.getCourses().add(course);
+        Student updated = studentRepo.save(student);
+
+        return convertToDto(updated);
     }
 
-    public Student updateStudentEmail(int id,Student updateEmail)
-    {
-        Student existStudent= studentRepo.findById((long) id).orElse(null);
-        if(existStudent!=null)
-        {
+    private StudentResponseDto convertToDto(Student student) {
+        List<String> courseTitles = student.getCourses() == null? List.of() : student.getCourses().stream().map(Course::getTitle).toList();
 
-            existStudent.setEmail(updateEmail.getEmail());
-            return studentRepo.save(existStudent);
-        }
-        return null;
+        return new StudentResponseDto(
+                student.getId(),
+                student.getUser().getUsername(),
+                student.getUser().getEmail(),
+                courseTitles
+        );
     }
 }

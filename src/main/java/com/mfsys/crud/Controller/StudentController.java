@@ -1,61 +1,68 @@
+
 package com.mfsys.crud.Controller;
 
-import java.beans.ConstructorProperties;
-import  java.util.*;
-import  java.util.List;
-import com.mfsys.crud.Entity.Student;
-import com.mfsys.crud.Repository.StudentRepo;
-import org.springframework.web.bind.annotation.*;
+import com.mfsys.crud.dto.AssignCourseRequest;
+import com.mfsys.crud.dto.StudentResponseDto;
+import com.mfsys.crud.services.CourseService;
 import com.mfsys.crud.services.StudentsService;
+//import org.apache.tomcat.util.http.parser.Authorization;
+//import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+
 import java.util.List;
 
+
+@CrossOrigin("http://localhost:4200")
 @RestController
-@RequestMapping("api/students")
+@RequestMapping("/api/students")
 public class StudentController {
-private final StudentsService studentService;
-    private final StudentRepo studentRepo;
 
-//    private final StudentRepo studentRepo;
+    private final StudentsService studentService;
+    private final CourseService courseService;
 
-    public  StudentController(StudentsService studentService, StudentRepo studentRepo)
-    {
-        this.studentService=studentService;
-        this.studentRepo = studentRepo;
+    public StudentController(StudentsService studentService, CourseService courseService) {
+        this.studentService = studentService;
+        this.courseService = courseService;
     }
 
     @GetMapping
-    public List<Student> getAllStudents()
-    {
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<StudentResponseDto> getAllStudents() {
         return studentService.getAllStudents();
     }
 
-    @PostMapping
-    public List<Student> createStudents(@RequestBody List<Student> student)
-    {
-return studentService.createStudents(student);
-    }
-
     @GetMapping("/{id}")
-    public Student getStudentByid(@PathVariable int id)
-    {
-        return studentService.getStudentbyId(id);
+    @PreAuthorize("hasRole('ADMIN')")
+    public StudentResponseDto getStudentById(@PathVariable int id) {
+        return studentService.getStudentById(id);
     }
 
-@PutMapping("/{id}")
-    public Student updatedStudent(@PathVariable int id, @RequestBody Student newData)
-{
-    return studentService.updateStudent(id, newData);
-}
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteStudent(@PathVariable int id) {
+        studentService.deleteStudent(id);
+    }
 
-@DeleteMapping("/{id}")
-    public void deleteStudent(@PathVariable int id)
-{
-    studentService.deleteStudent(id);
-}
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('STUDENT')")
+    public StudentResponseDto getMyRecord(Authentication authentication)
+    {
+        String email = authentication.getName();
+        return studentService.getStudentByEmail(email);
+    }
 
-@PatchMapping("/{id}")
-    public Student updateStudentEmail(@PathVariable int id, @RequestBody Student updateEmail)
-{
-    return studentService.updateStudentEmail(id,updateEmail);
-}
+    @PostMapping("/{id}/assign-course")
+    @PreAuthorize("hasRole('ADMIN')")
+    public  StudentResponseDto assignCourse(@PathVariable int id, @RequestBody AssignCourseRequest request)
+    {
+        return studentService.assignCourse(id, request.getCourseId());
+    }
+
+    @DeleteMapping("/{id}/remove-course/{courseId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void removeCourse(@PathVariable int id, @PathVariable Long courseId){
+        courseService.removeCourseFromStudent(id,courseId);
+    }
 }

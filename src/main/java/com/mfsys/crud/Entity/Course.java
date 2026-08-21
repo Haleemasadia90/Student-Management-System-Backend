@@ -24,7 +24,16 @@ public class Course {
     @Column(nullable = true)
     private  String description;
 
-@ManyToMany(mappedBy = "courses")
+    @Column(nullable = false, unique = true)
+    private String courseCode;
+
+    @Column(nullable = false)
+    private int creditHours;
+
+    @Column(nullable = false)
+    private String status;
+
+    @ManyToMany(mappedBy = "courses")
 private List<Student> students;
 
 }

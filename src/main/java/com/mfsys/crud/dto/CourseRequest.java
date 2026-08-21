@@ -1,6 +1,7 @@
 package com.mfsys.crud.dto;
 
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,4 +17,13 @@ public class CourseRequest {
 
     @NotBlank(message = "Description is required")
     private  String description;
+
+    @NotBlank(message = "Course code is required")
+    private String courseCode;
+
+    @Min(value = 1, message = "Credit hours must be at least 1")
+    private int creditHours;
+
+    @NotBlank(message = "Status is required")
+    private String status;
 }

@@ -38,6 +38,9 @@ public class CourseService {
         Course newCourse = new Course();
         newCourse.setTitle(request.getTitle());
         newCourse.setDescription(request.getDescription());
+     newCourse.setCourseCode(request.getCourseCode());
+     newCourse.setCreditHours(request.getCreditHours());
+     newCourse.setStatus(request.getStatus());
 
         Course saved = courseRepo.save(newCourse);
         return convertToDto(saved);
@@ -48,6 +51,9 @@ public class CourseService {
 
         course.setTitle(request.getTitle());
         course.setDescription(request.getDescription());
+     course.setCourseCode(request.getCourseCode());
+     course.setCreditHours(request.getCreditHours());
+     course.setStatus(request.getStatus());
 
         Course updated = courseRepo.save(course);
         return convertToDto(updated);
@@ -74,7 +80,10 @@ public class CourseService {
      return new CourseResponseDto(
              course.getId(),
              course.getTitle(),
-             course.getDescription()
+             course.getDescription(),
+             course.getCourseCode(),
+             course.getCreditHours(),
+             course.getStatus()
      );
  }
 }

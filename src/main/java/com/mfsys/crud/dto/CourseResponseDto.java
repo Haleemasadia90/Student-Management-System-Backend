@@ -13,4 +13,7 @@ public class CourseResponseDto {
     private Long id;
     private String title;
     private String description;
+    private String courseCode;
+    private int creditHours;
+    private String status;
 }

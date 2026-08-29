@@ -3,6 +3,7 @@ package com.mfsys.crud.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,4 +27,7 @@ public class CourseRequest {
 
     @NotBlank(message = "Status is required")
     private String status;
+
+    @NotNull(message = "Department is required")
+    private Long departmentId;
 }

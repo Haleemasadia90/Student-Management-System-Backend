@@ -8,6 +8,8 @@ import com.mfsys.crud.dto.CourseRequest;
 import com.mfsys.crud.dto.CourseResponseDto;
 import org.springframework.stereotype.Service;
 import org.springframework.stereotype.Service;
+import com.mfsys.crud.Entity.Department;
+import com.mfsys.crud.Repository.DepartmentRepo;
 
 import java.util.List;
 
@@ -17,15 +19,23 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 public class CourseService {
     private final CourseRepo courseRepo;
     private final StudentRepo studentRepo;
+    private final DepartmentRepo departmentRepo;
 
-    public CourseService(CourseRepo courseRepo, StudentRepo studentRepo)
+    public CourseService(CourseRepo courseRepo, StudentRepo studentRepo, DepartmentRepo departmentRepo)
     {
         this.courseRepo=courseRepo;
         this.studentRepo=studentRepo;
+        this.departmentRepo = departmentRepo;
     }
  public List<CourseResponseDto> getAllCourses(){
         return courseRepo.findAll().stream().map(this::convertToDto).toList();
  }
+    public List<CourseResponseDto> getCoursesByDepartment(Long departmentId) {
+        return courseRepo.findByDepartment_Id(departmentId)
+                .stream()
+                .map(this::convertToDto)
+                .toList();
+    }
 
  public CourseResponseDto getCourseById(int id){
         Course course = courseRepo.findById((long) id).orElse(null);
@@ -34,30 +44,46 @@ public class CourseService {
         return convertToDto(course);
  }
 
- public CourseResponseDto createCourse(CourseRequest request){
+    public CourseResponseDto createCourse(CourseRequest request) {
+
+        Department department = departmentRepo.findById(request.getDepartmentId())
+                .orElseThrow(() -> new RuntimeException("Department not found"));
+
         Course newCourse = new Course();
+
         newCourse.setTitle(request.getTitle());
         newCourse.setDescription(request.getDescription());
-     newCourse.setCourseCode(request.getCourseCode());
-     newCourse.setCreditHours(request.getCreditHours());
-     newCourse.setStatus(request.getStatus());
+        newCourse.setCourseCode(request.getCourseCode());
+        newCourse.setCreditHours(request.getCreditHours());
+        newCourse.setStatus(request.getStatus());
+
+        newCourse.setDepartment(department);
 
         Course saved = courseRepo.save(newCourse);
-        return convertToDto(saved);
- }
 
- public CourseResponseDto updateCourse(int id, CourseRequest request){
-        Course course = courseRepo.findById((long) id).orElseThrow(()-> new RuntimeException("Course not found"));
+        return convertToDto(saved);
+    }
+
+    public CourseResponseDto updateCourse(int id, CourseRequest request) {
+
+        Course course = courseRepo.findById((long) id)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        Department department = departmentRepo.findById(request.getDepartmentId())
+                .orElseThrow(() -> new RuntimeException("Department not found"));
 
         course.setTitle(request.getTitle());
         course.setDescription(request.getDescription());
-     course.setCourseCode(request.getCourseCode());
-     course.setCreditHours(request.getCreditHours());
-     course.setStatus(request.getStatus());
+        course.setCourseCode(request.getCourseCode());
+        course.setCreditHours(request.getCreditHours());
+        course.setStatus(request.getStatus());
+
+        course.setDepartment(department);
 
         Course updated = courseRepo.save(course);
+
         return convertToDto(updated);
- }
+    }
 
  public void deleteCourse(int id)
  {
@@ -83,7 +109,9 @@ public class CourseService {
              course.getDescription(),
              course.getCourseCode(),
              course.getCreditHours(),
-             course.getStatus()
+             course.getStatus(),
+             course.getDepartment().getId(),
+             course.getDepartment().getName()
      );
  }
 }

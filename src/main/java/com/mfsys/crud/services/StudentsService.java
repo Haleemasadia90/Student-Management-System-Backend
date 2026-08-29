@@ -56,13 +56,29 @@ public class StudentsService {
         return convertToDto(updated);
     }
 
+    public StudentResponseDto enrollInCourse(String email, Long courseId) {
+        Student student = studentRepo.findByUser_Email(email)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        Course course = courseRepo.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        student.getCourses().add(course);
+        Student updated = studentRepo.save(student);
+        return convertToDto(updated);
+    }
+
     private StudentResponseDto convertToDto(Student student) {
-        List<String> courseTitles = student.getCourses() == null? List.of() : student.getCourses().stream().map(Course::getTitle).toList();
+        List<String> courseTitles = student.getCourses() == null
+                ? List.of()
+                : student.getCourses().stream().map(Course::getTitle).toList();
 
         return new StudentResponseDto(
                 student.getId(),
                 student.getUser().getUsername(),
                 student.getUser().getEmail(),
+                student.getUser().getDepartment().getName(),
+                student.getUser().getDepartment().getId(),
                 courseTitles
         );
     }

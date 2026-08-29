@@ -33,6 +33,11 @@ public class Course {
     @Column(nullable = false)
     private String status;
 
+    @ManyToOne
+    @JoinColumn(name = "department_id", nullable = false)
+    private Department department;
+
+
     @ManyToMany(mappedBy = "courses")
 private List<Student> students;
 

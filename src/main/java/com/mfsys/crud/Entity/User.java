@@ -1,4 +1,5 @@
 package com.mfsys.crud.Entity;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -6,8 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Table(name = "user")
 public class User {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +26,25 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+    @Column(nullable = false)
+    private String fullName;
+
+    @Column(nullable = false)
+    private String phone;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id", nullable = true)
+    private Department department;
+
+    @Column(nullable = false)
+    private String dateOfBirth;
+
+    @Column(nullable = false)
+    private String gender;
+
+    @Column(nullable = false)
+    private String semester;
+
+    @Column(nullable = false)
+    private int admissionYear;
 }

@@ -1,7 +1,9 @@
 package com.mfsys.crud.services;
 
+import com.mfsys.crud.Entity.Department;
 import com.mfsys.crud.Entity.Student;
 import com.mfsys.crud.Entity.User;
+import com.mfsys.crud.Repository.DepartmentRepo;
 import com.mfsys.crud.Repository.StudentRepo;
 import com.mfsys.crud.Repository.UserRepository;
 import com.mfsys.crud.dto.LoginRequest;
@@ -22,6 +24,10 @@ public class AuthService {
     @Autowired
     private StudentRepo studentRepo;
 
+
+    @Autowired
+    private DepartmentRepo departmentRepo;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -34,11 +40,21 @@ public class AuthService {
             throw new RuntimeException("Email already registered");
         }
 
+        Department department = departmentRepo.findById(request.getDepartmentId())
+                .orElseThrow(() -> new RuntimeException("Department not found"));
+
         User newUser = new User();
         newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setRole("STUDENT");
+        newUser.setFullName(request.getFullName());
+        newUser.setPhone(request.getPhone());
+        newUser.setDepartment(department);   // ab Entity-object set ho raha hai
+        newUser.setDateOfBirth(request.getDateOfBirth());
+        newUser.setGender(request.getGender());
+        newUser.setSemester(request.getSemester());
+        newUser.setAdmissionYear(request.getAdmissionYear());
 
         User savedUser = userRepository.save(newUser);
 
@@ -46,15 +62,13 @@ public class AuthService {
         newStudent.setUser(savedUser);
         studentRepo.save(newStudent);
 
-
         return new UserResponseDto(
-                savedUser.getId(),
-                savedUser.getUsername(),
-                savedUser.getEmail(),
-                savedUser.getRole()
+                savedUser.getId(), savedUser.getUsername(), savedUser.getEmail(), savedUser.getRole(),
+                savedUser.getFullName(), savedUser.getPhone(),
+                savedUser.getDepartment().getName(),   // naam nikal rahe hain
+                savedUser.getDateOfBirth(), savedUser.getGender(), savedUser.getSemester(), savedUser.getAdmissionYear()
         );
     }
-
 
     public LoginResponse login(LoginRequest request) {
 

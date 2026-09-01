@@ -16,4 +16,6 @@ public class CourseResponseDto {
     private String courseCode;
     private int creditHours;
     private String status;
+    private Long departmentId;
+    private String departmentName;
 }

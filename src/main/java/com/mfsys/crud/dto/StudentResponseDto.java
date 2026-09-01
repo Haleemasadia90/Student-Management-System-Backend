@@ -14,5 +14,9 @@ public class StudentResponseDto {
     private Long id;
     private String username;
     private String email;
+    private String department;
+    private Long departmentId;
     private List<String> courseTitles;
+    private int totalCreditHours;   // ← naya
+    private int maxCreditHours;
 }

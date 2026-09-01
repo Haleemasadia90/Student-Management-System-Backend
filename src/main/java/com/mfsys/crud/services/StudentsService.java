@@ -15,6 +15,8 @@ public class StudentsService {
     private final StudentRepo studentRepo;
     private final CourseRepo courseRepo;
 
+    private static final int MAX_CREDIT_HOURS = 18;
+
     public StudentsService(StudentRepo studentRepo, CourseRepo courseRepo) {
         this.studentRepo = studentRepo;
         this.courseRepo = courseRepo;
@@ -56,14 +58,48 @@ public class StudentsService {
         return convertToDto(updated);
     }
 
+    public StudentResponseDto enrollInCourse(String email, Long courseId) {
+        Student student = studentRepo.findByUser_Email(email)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        Course course = courseRepo.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        int currentCreditHours = getTotalCreditHours(student);
+
+        if (currentCreditHours + course.getCreditHours() > MAX_CREDIT_HOURS) {
+            throw new RuntimeException(
+                    "Enrolling in this course would exceed the " + MAX_CREDIT_HOURS + " credit hour limit. " +
+                            "Currently enrolled: " + currentCreditHours + " credit hours."
+            );
+        }
+
+        student.getCourses().add(course);
+        Student updated = studentRepo.save(student);
+        return convertToDto(updated);
+    }
+
+    private int getTotalCreditHours(Student student) {
+        if (student.getCourses() == null) return 0;
+        return student.getCourses().stream()
+                .mapToInt(Course::getCreditHours)
+                .sum();
+    }
+
     private StudentResponseDto convertToDto(Student student) {
-        List<String> courseTitles = student.getCourses() == null? List.of() : student.getCourses().stream().map(Course::getTitle).toList();
+        List<String> courseTitles = student.getCourses() == null
+                ? List.of()
+                : student.getCourses().stream().map(Course::getTitle).toList();
 
         return new StudentResponseDto(
                 student.getId(),
                 student.getUser().getUsername(),
                 student.getUser().getEmail(),
-                courseTitles
+                student.getUser().getDepartment().getName(),
+                student.getUser().getDepartment().getId(),
+                courseTitles,
+                getTotalCreditHours(student),
+                MAX_CREDIT_HOURS
         );
     }
 }

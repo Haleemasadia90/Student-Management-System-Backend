@@ -18,8 +18,13 @@ public class CourseController {
         this.courseService = courseService;
     }
 
+
+
     @GetMapping
-    public List<CourseResponseDto> getAllCourses() {
+    public List<CourseResponseDto> getAllCourses(@RequestParam(required = false) Long departmentId) {
+        if (departmentId != null) {
+            return courseService.getCoursesByDepartment(departmentId);
+        }
         return courseService.getAllCourses();
     }
 

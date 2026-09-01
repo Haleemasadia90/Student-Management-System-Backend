@@ -60,6 +60,13 @@ public class StudentController {
         return studentService.assignCourse(id, request.getCourseId());
     }
 
+    @PostMapping("/enroll")
+    @PreAuthorize("hasRole('STUDENT')")
+    public StudentResponseDto enrollInCourse(Authentication authentication, @RequestBody AssignCourseRequest request) {
+        String email = authentication.getName();
+        return studentService.enrollInCourse(email, request.getCourseId());
+    }
+
     @DeleteMapping("/{id}/remove-course/{courseId}")
     @PreAuthorize("hasRole('ADMIN')")
     public void removeCourse(@PathVariable int id, @PathVariable Long courseId){

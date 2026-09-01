@@ -15,10 +15,16 @@ public class FeeService {
 
     private  final FeeRepo feeRepo;
     private final StudentRepo studentRepo;
+    private static final double RATE_PER_CREDIT_HOUR = 5000;
+    private static final double FIXED_SEMESTER_CHARGE = 15000;
 
     public FeeService(FeeRepo feeRepo, StudentRepo studentRepo){
         this.feeRepo = feeRepo;
         this.studentRepo=studentRepo;
+    }
+
+    public double calculateSuggestedFee(int creditHours) {
+        return (creditHours * RATE_PER_CREDIT_HOUR) + FIXED_SEMESTER_CHARGE;
     }
 
     public FeeResponseDto createFee(int studentId, FeeRequest request){
@@ -35,9 +41,17 @@ public class FeeService {
         return  convertToDto(saved);
     }
 
+    public List<FeeResponseDto> getAllFees() {
+        return feeRepo.findAll()
+                .stream()
+                .map(this::convertToDto)
+                .toList();
+    }
+
     public List<FeeResponseDto> getFeesByStudentId(int studentId){
         return feeRepo.findByStudent_Id((long) studentId).stream().map(this::convertToDto).toList();
     }
+
 
     public List<FeeResponseDto> getMyFee(String email)
     {
@@ -62,11 +76,13 @@ public class FeeService {
         feeRepo.deleteById((long) feeId);
     }
 
+
     private FeeResponseDto convertToDto(Fee fee){
         double due = fee.getTotalFee()-fee.getPaidFee();
 
         return new FeeResponseDto(
                 fee.getId(),
+                fee.getStudent().getId(),
                 fee.getStudent().getUser().getUsername(),
                 fee.getSemester(),
                 fee.getTotalFee(),

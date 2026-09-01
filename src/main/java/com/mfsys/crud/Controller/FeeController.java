@@ -28,10 +28,21 @@ public class FeeController {
         return  feeService.createFee(studentId,request);
     }
 
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<FeeResponseDto> getAllFees() {
+        return feeService.getAllFees();
+    }
+
     @GetMapping("/student/{studentId}")
     @PreAuthorize("hasRole('ADMIN')")
     public List<FeeResponseDto> getFeesByStudentId(@PathVariable int studentId){
         return feeService.getFeesByStudentId(studentId);
+    }
+
+    @GetMapping("/calculate")
+    public double calculateFee(@RequestParam int creditHours) {
+        return feeService.calculateSuggestedFee(creditHours);
     }
 
     @GetMapping("/me")

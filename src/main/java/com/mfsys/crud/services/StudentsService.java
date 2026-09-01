@@ -15,6 +15,8 @@ public class StudentsService {
     private final StudentRepo studentRepo;
     private final CourseRepo courseRepo;
 
+    private static final int MAX_CREDIT_HOURS = 18;
+
     public StudentsService(StudentRepo studentRepo, CourseRepo courseRepo) {
         this.studentRepo = studentRepo;
         this.courseRepo = courseRepo;
@@ -63,9 +65,25 @@ public class StudentsService {
         Course course = courseRepo.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Course not found"));
 
+        int currentCreditHours = getTotalCreditHours(student);
+
+        if (currentCreditHours + course.getCreditHours() > MAX_CREDIT_HOURS) {
+            throw new RuntimeException(
+                    "Enrolling in this course would exceed the " + MAX_CREDIT_HOURS + " credit hour limit. " +
+                            "Currently enrolled: " + currentCreditHours + " credit hours."
+            );
+        }
+
         student.getCourses().add(course);
         Student updated = studentRepo.save(student);
         return convertToDto(updated);
+    }
+
+    private int getTotalCreditHours(Student student) {
+        if (student.getCourses() == null) return 0;
+        return student.getCourses().stream()
+                .mapToInt(Course::getCreditHours)
+                .sum();
     }
 
     private StudentResponseDto convertToDto(Student student) {
@@ -79,7 +97,9 @@ public class StudentsService {
                 student.getUser().getEmail(),
                 student.getUser().getDepartment().getName(),
                 student.getUser().getDepartment().getId(),
-                courseTitles
+                courseTitles,
+                getTotalCreditHours(student),
+                MAX_CREDIT_HOURS
         );
     }
 }

@@ -2,6 +2,7 @@ package com.mfsys.crud.Repository;
 
 import com.mfsys.crud.Entity.Fee;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 

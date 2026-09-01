@@ -9,6 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class FeeResponseDto {
     private Long id;
+    private Long studentId;
     private String studentUsername;
     private String semester;
     private double totalFee;

@@ -3,10 +3,14 @@ package com.mfsys.crud.services;
 
 import com.mfsys.crud.Entity.Course;
 import com.mfsys.crud.Entity.Student;
+import com.mfsys.crud.Entity.User;
 import com.mfsys.crud.Repository.CourseRepo;
 import com.mfsys.crud.Repository.StudentRepo;
+import com.mfsys.crud.Repository.UserRepository;
 import com.mfsys.crud.dto.StudentResponseDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,6 +25,8 @@ public class StudentsService {
         this.studentRepo = studentRepo;
         this.courseRepo = courseRepo;
     }
+    @Autowired
+    private  UserRepository userRepository;
 
     public List<StudentResponseDto> getAllStudents() {
         return studentRepo.findAll()
@@ -86,6 +92,16 @@ public class StudentsService {
                 .sum();
     }
 
+    public List<StudentResponseDto> searchStudentsByName(String pattern) {
+        if (pattern == null || pattern.isBlank()) {
+            return List.of();
+        }
+        return studentRepo.searchByUsernameRegex(pattern)
+                .stream()
+                .map(this::convertToDto)
+                .toList();
+    }
+
     private StudentResponseDto convertToDto(Student student) {
         List<String> courseTitles = student.getCourses() == null
                 ? List.of()
@@ -99,7 +115,31 @@ public class StudentsService {
                 student.getUser().getDepartment().getId(),
                 courseTitles,
                 getTotalCreditHours(student),
-                MAX_CREDIT_HOURS
+                MAX_CREDIT_HOURS,
+                student.getUser().getProfilePicture()
+
         );
+
+    }
+
+    public String uploadProfilePicture(String email, MultipartFile file) throws java.io.IOException {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String uploadDir = "uploads/profile-pictures/";
+        java.io.File directory = new java.io.File(uploadDir);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
+        java.nio.file.Files.write(filePath, file.getBytes());
+
+        user.setProfilePicture(fileName);
+        userRepository.save(user);
+
+        return fileName;
     }
 }

@@ -19,4 +19,5 @@ public class StudentResponseDto {
     private List<String> courseTitles;
     private int totalCreditHours;   // ← naya
     private int maxCreditHours;
+    private String profilePicture;
 }

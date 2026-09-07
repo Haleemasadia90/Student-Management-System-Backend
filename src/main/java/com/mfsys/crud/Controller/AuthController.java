@@ -1,15 +1,14 @@
 package com.mfsys.crud.Controller;
 
-import com.mfsys.crud.dto.LoginRequest;
-import com.mfsys.crud.dto.LoginResponse;
-import com.mfsys.crud.dto.SignupRequest;
-import com.mfsys.crud.dto.UserResponseDto;
+import com.mfsys.crud.dto.*;
 import com.mfsys.crud.services.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
+import com.mfsys.crud.dto.ForgotPasswordRequest;
+import com.mfsys.crud.dto.ResetPasswordRequest;
 
 @CrossOrigin("http://localhost:4200")
 @RestController
@@ -19,7 +18,7 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    // ============ SIGNUP (already bana hua) ============
+
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest request) {
         try {
@@ -30,7 +29,7 @@ public class AuthController {
         }
     }
 
-    // ============ LOGIN (naya) ============
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
@@ -42,10 +41,45 @@ public class AuthController {
     }
 
 
-    // AuthController.java me temporarily add karein testing ke liye
     @GetMapping("/test-admin")
     @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> testAdminOnly() {
         return ResponseEntity.ok("Admin login!");
     }
+
+
+
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(Authentication authentication, @Valid @RequestBody ChangePasswordRequest request) {
+        try {
+            String email = authentication.getName();
+            authService.changePassword(email, request);
+            return ResponseEntity.ok("Password changed successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        try {
+            authService.forgotPassword(request.getEmail());
+            return ResponseEntity.ok("Password reset link sent to your email");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        try {
+            authService.resetPassword(request);
+            return ResponseEntity.ok("Password reset successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
+

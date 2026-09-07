@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Entity
@@ -47,4 +49,13 @@ public class User {
 
     @Column(nullable = false)
     private int admissionYear;
+
+    @Column(nullable = true)
+    private String resetToken;
+
+    @Column(nullable = true)
+    private LocalDateTime resetTokenExpiry;
+
+    @Column(nullable = true)
+    private String profilePicture;
 }

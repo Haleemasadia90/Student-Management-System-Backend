@@ -3,10 +3,12 @@ package com.mfsys.crud.Controller;
 
 import com.mfsys.crud.dto.AssignCourseRequest;
 import com.mfsys.crud.dto.StudentResponseDto;
+import com.mfsys.crud.dto.UpdateProfileRequest;
 import com.mfsys.crud.services.CourseService;
 import com.mfsys.crud.services.StudentsService;
 //import org.apache.tomcat.util.http.parser.Authorization;
 //import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -81,6 +83,20 @@ public class StudentController {
     @PreAuthorize("hasRole('ADMIN')")
     public void removeCourse(@PathVariable int id, @PathVariable Long courseId){
         courseService.removeCourseFromStudent(id,courseId);
+    }
+
+
+
+    @PutMapping("/update-profile")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<?> updateProfile(Authentication authentication, @Valid @RequestBody UpdateProfileRequest request) {
+        try {
+            String email = authentication.getName();
+            StudentResponseDto updated = studentService.updateMyProfile(email, request);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/upload-photo")

@@ -6,10 +6,7 @@ import com.mfsys.crud.Entity.User;
 import com.mfsys.crud.Repository.DepartmentRepo;
 import com.mfsys.crud.Repository.StudentRepo;
 import com.mfsys.crud.Repository.UserRepository;
-import com.mfsys.crud.dto.LoginRequest;
-import com.mfsys.crud.dto.LoginResponse;
-import com.mfsys.crud.dto.SignupRequest;
-import com.mfsys.crud.dto.UserResponseDto;
+import com.mfsys.crud.dto.*;
 import com.mfsys.crud.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -91,5 +88,51 @@ public class AuthService {
         );
     }
 
+
+    public void changePassword(String email, ChangePasswordRequest request) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        boolean oldPasswordMatches = passwordEncoder.matches(request.getOldPassword(), user.getPassword());
+
+        if (!oldPasswordMatches) {
+            throw new RuntimeException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
+
+    @Autowired
+    private EmailService emailService;
+
+    public void forgotPassword(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("No account found with this email"));
+
+        String token = java.util.UUID.randomUUID().toString();
+        user.setResetToken(token);
+        user.setResetTokenExpiry(java.time.LocalDateTime.now().plusMinutes(15));
+        userRepository.save(user);
+
+        String resetLink = "http://localhost:4200/reset-password?token=" + token;
+        emailService.sendPasswordResetEmail(user.getEmail(), resetLink);
+    }
+
+    public void resetPassword(ResetPasswordRequest request) {
+        User user = userRepository.findByResetToken(request.getToken())
+                .orElseThrow(() -> new RuntimeException("Invalid or expired reset link"));
+
+        if (user.getResetTokenExpiry() == null || user.getResetTokenExpiry().isBefore(java.time.LocalDateTime.now())) {
+            throw new RuntimeException("Reset link has expired. Please request a new one.");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setResetToken(null);
+        user.setResetTokenExpiry(null);
+        userRepository.save(user);
+    }
 
 }

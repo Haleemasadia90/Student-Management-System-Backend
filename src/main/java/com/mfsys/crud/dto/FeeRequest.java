@@ -18,6 +18,4 @@ public class FeeRequest {
     @Min(value = 0, message = "Paid fee cannot be negative")
     private double paidFee;
 
-    @NotBlank(message = "Status is required")
-    private String status;
 }

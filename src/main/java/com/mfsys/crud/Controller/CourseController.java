@@ -52,4 +52,16 @@ public class CourseController {
     public void deleteCourse(@PathVariable int id){
         courseService.deleteCourse((id));
     }
+
+
+//    calculate total courses
+@GetMapping("/count")
+@PreAuthorize("hasRole('ADMIN')")
+public long getTotalCourses() {
+    return courseService.getTotalCoursesCount();
+}
+
+
+
+
 }

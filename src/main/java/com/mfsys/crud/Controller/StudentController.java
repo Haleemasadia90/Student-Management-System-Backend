@@ -3,12 +3,17 @@ package com.mfsys.crud.Controller;
 
 import com.mfsys.crud.dto.AssignCourseRequest;
 import com.mfsys.crud.dto.StudentResponseDto;
+import com.mfsys.crud.dto.UpdateProfileRequest;
 import com.mfsys.crud.services.CourseService;
 import com.mfsys.crud.services.StudentsService;
 //import org.apache.tomcat.util.http.parser.Authorization;
 //import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
@@ -37,6 +42,13 @@ public class StudentController {
     @PreAuthorize("hasRole('ADMIN')")
     public StudentResponseDto getStudentById(@PathVariable int id) {
         return studentService.getStudentById(id);
+    }
+
+
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<StudentResponseDto> searchStudents(@RequestParam String name) {
+        return studentService.searchStudentsByName(name);
     }
 
     @DeleteMapping("/{id}")
@@ -72,4 +84,38 @@ public class StudentController {
     public void removeCourse(@PathVariable int id, @PathVariable Long courseId){
         courseService.removeCourseFromStudent(id,courseId);
     }
+
+
+
+    @PutMapping("/update-profile")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<?> updateProfile(Authentication authentication, @Valid @RequestBody UpdateProfileRequest request) {
+        try {
+            String email = authentication.getName();
+            StudentResponseDto updated = studentService.updateMyProfile(email, request);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/upload-photo")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<?> uploadPhoto(Authentication authentication, @RequestParam("file") MultipartFile file) {
+        try {
+            String email = authentication.getName();
+            String fileName = studentService.uploadProfilePicture(email, file);
+            return ResponseEntity.ok(fileName);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Upload failed: " + e.getMessage());
+        }
+    }
+
+
+//    calculate total students
+@GetMapping("/count")
+@PreAuthorize("hasRole('ADMIN')")
+public long getTotalStudents() {
+    return studentService.getTotalStudentsCount();
+}
 }

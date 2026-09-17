@@ -35,4 +35,13 @@ public class DepartmentController {
         departmentService.deleteDepartment(id);
     }
 
+
+
+//    calculate total department
+@GetMapping("/count")
+@PreAuthorize("hasRole('ADMIN')")
+public long getTotalDepartments() {
+    return departmentService.getTotalDepartmentsCount();
+}
+
 }

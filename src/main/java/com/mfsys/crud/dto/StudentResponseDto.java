@@ -26,4 +26,7 @@ public class StudentResponseDto {
     private String currentSemester;
     private int currentSemesterNumber;
     private int totalSemesters;
+    private int enrolledCoursesCount;
+    private int availableCoursesCount;
+
 }

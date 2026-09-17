@@ -110,4 +110,12 @@ public class StudentController {
             return ResponseEntity.badRequest().body("Upload failed: " + e.getMessage());
         }
     }
+
+
+//    calculate total students
+@GetMapping("/count")
+@PreAuthorize("hasRole('ADMIN')")
+public long getTotalStudents() {
+    return studentService.getTotalStudentsCount();
+}
 }

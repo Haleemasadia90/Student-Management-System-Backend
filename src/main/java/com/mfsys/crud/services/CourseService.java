@@ -101,6 +101,14 @@ public class CourseService {
 
     }
 
+
+//    calculate total courses
+
+    public long getTotalCoursesCount() {
+        return courseRepo.count();
+    }
+
+
  private CourseResponseDto convertToDto(Course course)
  {
      return new CourseResponseDto(

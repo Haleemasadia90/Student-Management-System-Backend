@@ -123,6 +123,25 @@ public class FeeService {
 
 
 
+//    calculate overall fee summary
+public FeeSummaryDto getOverallFeeSummary() {
+    List<FeeResponseDto> fees = feeRepo.findAll()
+            .stream()
+            .map(this::convertToDto)
+            .toList();
+
+    double totalPaid = fees.stream().mapToDouble(FeeResponseDto::getPaidFee).sum();
+    double totalDue = fees.stream().mapToDouble(FeeResponseDto::getDueAmount).sum();
+    double totalOverall = totalPaid + totalDue;
+
+    int paidPercentage = totalOverall > 0
+            ? (int) Math.round((totalPaid / totalOverall) * 100)
+            : 0;
+
+    return new FeeSummaryDto(totalPaid, totalDue, totalOverall, paidPercentage);
+}
+
+
 //    status-calculation method
 private String calculateStatus(double totalFee, double paidFee) {
     if (paidFee >= totalFee && totalFee > 0) return "PAID";

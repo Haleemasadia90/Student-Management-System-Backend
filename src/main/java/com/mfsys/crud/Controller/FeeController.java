@@ -92,4 +92,11 @@ public class FeeController {
     public List<String> getAvailableSemesters(@PathVariable int studentId) {
         return feeService.getAvailableSemesters(studentId);
     }
+
+//    calculate overall fee summary
+@GetMapping("/summary")
+@PreAuthorize("hasRole('ADMIN')")
+public FeeSummaryDto getOverallFeeSummary() {
+    return feeService.getOverallFeeSummary();
+}
 }

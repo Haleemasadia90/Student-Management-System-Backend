@@ -147,11 +147,24 @@ private static final int TOTAL_SEMESTERS = 8;
         return new String[]{semesterLabels.get(semesterIndex), String.valueOf(semesterIndex + 1)};
     }
 
+
+
+//    claculate total students
+public long getTotalStudentsCount() {
+    return studentRepo.count();
+}
+
     private StudentResponseDto convertToDto(Student student) {
         List<String> courseTitles = student.getCourses() == null
                 ? List.of()
                 : student.getCourses().stream().map(Course::getTitle).toList();
         String[] semesterInfo = calculateCurrentSemester(student.getUser().getAdmissionYear());
+
+
+        int enrolledCoursesCount = courseTitles.size();
+        long availableCoursesCount = courseRepo.countByDepartment_Id(
+                student.getUser().getDepartment().getId()
+        );
 
         return new StudentResponseDto(
                 student.getId(),
@@ -168,7 +181,9 @@ private static final int TOTAL_SEMESTERS = 8;
                 student.getUser().getAdmissionYear(),
                 semesterInfo[0],
                 Integer.parseInt(semesterInfo[1]),
-                TOTAL_SEMESTERS
+                TOTAL_SEMESTERS,
+                enrolledCoursesCount,
+                (int) availableCoursesCount
 
         );
 

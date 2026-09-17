@@ -36,6 +36,13 @@ public class DepartmentService {
         departmentRepo.deleteById((long) id);
     }
 
+
+//    calculate total department
+public long getTotalDepartmentsCount() {
+    return departmentRepo.count();
+}
+
+
     private DepartmentResponseDto convertToDto(Department department) {
         return new DepartmentResponseDto(
                 department.getId(),

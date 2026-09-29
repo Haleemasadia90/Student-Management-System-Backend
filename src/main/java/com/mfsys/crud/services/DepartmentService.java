@@ -32,6 +32,19 @@ public class DepartmentService {
         return convertToDto(saved);
     }
 
+
+
+    public DepartmentResponseDto updateDepartment(int id, DepartmentRequest request) {
+
+        Department department = departmentRepo.findById((long) id).orElseThrow(() ->
+                        new RuntimeException("Department not found with id: " + id));
+
+        department.setName(request.getName());
+        Department updated = departmentRepo.save(department);
+        return convertToDto(updated);
+    }
+
+
     public void deleteDepartment(int id) {
         departmentRepo.deleteById((long) id);
     }

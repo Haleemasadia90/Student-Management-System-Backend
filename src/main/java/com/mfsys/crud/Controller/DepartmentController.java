@@ -29,13 +29,21 @@ public class DepartmentController {
         return departmentService.createDepartment(request);
     }
 
+
+
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteDepartment(@PathVariable int id) {
         departmentService.deleteDepartment(id);
     }
 
+    @PutMapping("/{id}")
+    public DepartmentResponseDto updateDepartment(@PathVariable int id, @RequestBody DepartmentRequest request)
+    {
 
+        return departmentService.updateDepartment(id, request);
+    }
 
 //    calculate total department
 @GetMapping("/count")

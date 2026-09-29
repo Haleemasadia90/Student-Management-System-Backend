@@ -6,16 +6,16 @@ import com.mfsys.crud.Repository.CourseRepo;
 import com.mfsys.crud.Repository.StudentRepo;
 import com.mfsys.crud.dto.CourseRequest;
 import com.mfsys.crud.dto.CourseResponseDto;
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.mfsys.crud.Entity.Department;
 import com.mfsys.crud.Repository.DepartmentRepo;
 
 import java.util.List;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-
 @Service
+
 public class CourseService {
     private final CourseRepo courseRepo;
     private final StudentRepo studentRepo;
@@ -27,6 +27,16 @@ public class CourseService {
         this.studentRepo=studentRepo;
         this.departmentRepo = departmentRepo;
     }
+
+
+//    Paginator
+    public Page<CourseResponseDto> getAllCourses(Pageable pageable){
+        return  courseRepo.findAll(pageable).map(this::convertToDto);
+    }
+
+
+
+
  public List<CourseResponseDto> getAllCourses(){
         return courseRepo.findAll().stream().map(this::convertToDto).toList();
  }

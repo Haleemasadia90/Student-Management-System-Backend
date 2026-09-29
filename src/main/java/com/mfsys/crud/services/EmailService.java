@@ -11,16 +11,26 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendPasswordResetEmail(String toEmail, String resetLink) {
+    public void sendPasswordResetOtp(String email, String otp) {
+
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("Password Reset Request");
+
+        message.setTo(email);
+
+        message.setSubject( "Student Management System - Password Reset OTP" );
+
         message.setText(
-                "You requested a password reset.\n\n" +
-                        "Click the link below to reset your password (valid for 15 minutes):\n" +
-                        resetLink + "\n\n" +
-                        "If you did not request this, please ignore this email."
+                "Hello,\n\n" +
+                        "You requested a password reset for your Student Management System account.\n\n" +
+                        "Your password reset OTP is:\n\n" +
+                        otp + "\n\n" +
+                        "This OTP is valid for 5 minutes.\n\n" +
+                        "If you did not request a password reset, please ignore this email.\n\n" +
+                        "Regards,\n" +
+                        "Student Management System"
         );
+
         mailSender.send(message);
     }
 }
+

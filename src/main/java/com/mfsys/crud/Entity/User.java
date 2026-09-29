@@ -51,10 +51,10 @@ public class User {
     private int admissionYear;
 
     @Column(nullable = true)
-    private String resetToken;
+    private String resetOtp;
 
     @Column(nullable = true)
-    private LocalDateTime resetTokenExpiry;
+    private LocalDateTime resetOtpExpiry;
 
     @Column(nullable = true)
     private String profilePicture;

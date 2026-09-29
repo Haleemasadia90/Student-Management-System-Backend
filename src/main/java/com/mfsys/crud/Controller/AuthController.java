@@ -62,12 +62,49 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<?> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request
+    ) {
+
         try {
-            authService.forgotPassword(request.getEmail());
-            return ResponseEntity.ok("Password reset link sent to your email");
+
+            authService.forgotPassword(
+                    request.getEmail()
+            );
+
+            return ResponseEntity.ok(
+                    "OTP sent to your email"
+            );
+
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(
+            @Valid @RequestBody VerifyOtpRequest request
+    ) {
+
+        try {
+
+            authService.verifyOtp(
+                    request.getEmail(),
+                    request.getOtp()
+            );
+
+            return ResponseEntity.ok(
+                    "OTP verified successfully"
+            );
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
         }
     }
 
@@ -80,6 +117,23 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        try {
+            RefreshTokenResponse response = authService.refreshAccessToken(request.getRefreshToken());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@Valid @RequestBody RefreshTokenRequest request) {
+        authService.logout(request.getRefreshToken());
+        return ResponseEntity.ok("Logged out successfully");
+    }
+
 
 }
 

@@ -43,6 +43,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String email = jwtUtil.extractEmail(token);
             String role = jwtUtil.extractRole(token);
 
+
             // Spring Security ko batana: "ye request authenticated hai, iska role ye hai"
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(
@@ -52,6 +53,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     );
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
+
+
+
         }
 
         filterChain.doFilter(request, response);   // ab request aage — controller tak — jane do

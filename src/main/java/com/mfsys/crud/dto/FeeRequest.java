@@ -12,8 +12,11 @@ public class FeeRequest {
     @NotBlank(message = "Semester is required")
     private String semester;
 
-    @Min(value = 0, message = "Total fee cannot be negative")
-    private double totalFee;
+    @Min(value = 0, message = "Rate per credit hour cannot be negative")
+    private double ratePerCreditHour;
+
+    @Min(value = 0, message = "Fixed semester charge cannot be negative")
+    private double fixedSemesterCharge;
 
     @Min(value = 0, message = "Paid fee cannot be negative")
     private double paidFee;

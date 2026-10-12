@@ -14,6 +14,6 @@ public interface StudentRepo extends JpaRepository<Student, Long> {
 
     @Query(value = "SELECT s.* FROM student s " +
             "JOIN user u ON s.user_id = u.id " +
-            "WHERE u.username REGEXP :4", nativeQuery = true )
+            "WHERE u.username REGEXP :pattern", nativeQuery = true)
     List<Student> searchByUsernameRegex(@Param("pattern") String pattern);
 }

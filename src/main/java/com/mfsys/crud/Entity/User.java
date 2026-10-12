@@ -57,5 +57,5 @@ public class User {
     private LocalDateTime resetOtpExpiry;
 
     @Column(nullable = true)
-    private String profilePicture;
+    private  String profilePicture;
 }

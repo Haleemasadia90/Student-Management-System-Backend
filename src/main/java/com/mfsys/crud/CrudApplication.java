@@ -77,15 +77,15 @@ public class CrudApplication {
 		return args -> {
 
 			// Create default department if it doesn't exist
-			Department department;
-
-			if (departmentRepo.findAll().isEmpty()) {
-				department = new Department();
-				department.setName("Administration");
-				department = departmentRepo.save(department);
-			} else {
-				department = departmentRepo.findAll().get(0);
-			}
+//			Department department;
+//
+//			if (departmentRepo.findAll().isEmpty()) {
+//				department = new Department();
+//				department.setName("");
+//				department = departmentRepo.save(department);
+//			} else {
+//				department = departmentRepo.findAll().get(0);
+//			}
 
 			// Create admin
 			if (userRepository.findByEmail("admin@registrar.edu").isEmpty()) {
@@ -100,7 +100,7 @@ public class CrudApplication {
 				admin.setPhone("0000000000");
 
 				// IMPORTANT
-				admin.setDepartment(department);
+//				admin.setDepartment(department);
 
 
 				admin.setDateOfBirth("2000-01-01");

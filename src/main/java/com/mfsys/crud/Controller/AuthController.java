@@ -20,9 +20,6 @@ public class AuthController {
     private AuthService authService;
 
 
-    // =========================================================
-    // SIGNUP
-    // =========================================================
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(
@@ -45,9 +42,6 @@ public class AuthController {
     }
 
 
-    // =========================================================
-    // LOGIN
-    // =========================================================
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
@@ -70,9 +64,6 @@ public class AuthController {
     }
 
 
-    // =========================================================
-    // TEST ADMIN
-    // =========================================================
 
     @GetMapping("/test-admin")
     @PreAuthorize("hasRole('ADMIN')")
@@ -84,9 +75,7 @@ public class AuthController {
     }
 
 
-    // =========================================================
-    // CHANGE PASSWORD
-    // =========================================================
+
 
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(
@@ -117,9 +106,7 @@ public class AuthController {
     }
 
 
-    // =========================================================
-    // FORGOT PASSWORD - SEND OTP
-    // =========================================================
+
 
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(
@@ -146,8 +133,60 @@ public class AuthController {
 
 
     // =========================================================
-    // VERIFY OTP
-    // =========================================================
+// RESEND REGISTRATION OTP
+// =========================================================
+
+    @PostMapping("/resend-registration-otp")
+    public ResponseEntity<?> resendRegistrationOtp(
+            @RequestBody VerifyOtpRequest request
+    ) {
+
+        try {
+
+            authService.resendRegistrationOtp(
+                    request.getEmail()
+            );
+
+            return ResponseEntity.ok(
+                    "Registration OTP resent successfully"
+            );
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+
+// =========================================================
+// RESEND FORGOT PASSWORD OTP
+// =========================================================
+
+    @PostMapping("/resend-forgot-password-otp")
+    public ResponseEntity<?> resendForgotPasswordOtp(
+            @RequestBody ForgotPasswordRequest request
+    ) {
+
+        try {
+
+            authService.resendForgotPasswordOtp(
+                    request.getEmail()
+            );
+
+            return ResponseEntity.ok(
+                    "OTP resent successfully"
+            );
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
 
     @PostMapping("/verify-otp")
     public ResponseEntity<?> verifyOtp(
@@ -173,10 +212,20 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/verify-registration-otp")
+    public ResponseEntity<?> verifyRegistrationOtp(
+            @RequestBody VerifyOtpRequest request
+    ) {
 
-    // =========================================================
-    // RESET PASSWORD
-    // =========================================================
+        authService.verifyRegistrationOtp(
+                request.getEmail(),
+                request.getOtp()
+        );
+
+        return ResponseEntity.ok(
+                "Registration completed successfully"
+        );
+    }
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(
@@ -202,9 +251,7 @@ public class AuthController {
     }
 
 
-    // =========================================================
-    // REFRESH TOKEN
-    // =========================================================
+
 
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(
@@ -229,9 +276,6 @@ public class AuthController {
     }
 
 
-    // =========================================================
-    // LOGOUT
-    // =========================================================
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(

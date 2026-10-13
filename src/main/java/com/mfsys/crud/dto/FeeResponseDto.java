@@ -12,6 +12,8 @@ public class FeeResponseDto {
     private Long studentId;
     private String studentUsername;
     private String semester;
+    private double ratePerCreditHour;
+    private double fixedSemesterCharge;
     private double totalFee;
     private double paidFee;
     private double dueAmount;

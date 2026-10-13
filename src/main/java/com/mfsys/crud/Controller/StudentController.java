@@ -41,10 +41,6 @@ public class StudentController {
     }
 
 
-    // =========================================================
-    // GET ALL STUDENTS
-    // =========================================================
-
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public List<StudentResponseDto> getAllStudents() {
@@ -52,10 +48,6 @@ public class StudentController {
         return studentService.getAllStudents();
     }
 
-
-    // =========================================================
-    // PAGINATED STUDENTS
-    // =========================================================
 
     @GetMapping("/paged")
     @PreAuthorize("hasRole('ADMIN')")
@@ -81,10 +73,6 @@ public class StudentController {
     }
 
 
-    // =========================================================
-    // GET STUDENT BY ID
-    // =========================================================
-
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public StudentResponseDto getStudentById(
@@ -94,10 +82,6 @@ public class StudentController {
         return studentService.getStudentById(id);
     }
 
-
-    // =========================================================
-    // SEARCH STUDENTS
-    // =========================================================
 
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN')")
@@ -109,10 +93,6 @@ public class StudentController {
     }
 
 
-    // =========================================================
-    // DELETE STUDENT
-    // =========================================================
-
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteStudent(
@@ -122,10 +102,6 @@ public class StudentController {
         studentService.deleteStudent(id);
     }
 
-
-    // =========================================================
-    // CURRENT STUDENT
-    // =========================================================
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('STUDENT')")
@@ -139,10 +115,6 @@ public class StudentController {
     }
 
 
-    // =========================================================
-    // ASSIGN COURSE
-    // =========================================================
-
     @PostMapping("/{id}/assign-course")
     @PreAuthorize("hasRole('ADMIN')")
     public StudentResponseDto assignCourse(
@@ -155,11 +127,6 @@ public class StudentController {
                 request.getCourseId()
         );
     }
-
-
-    // =========================================================
-    // STUDENT ENROLL COURSE
-    // =========================================================
 
     @PostMapping("/enroll")
     @PreAuthorize("hasRole('STUDENT')")
@@ -177,10 +144,6 @@ public class StudentController {
     }
 
 
-    // =========================================================
-    // REMOVE COURSE
-    // =========================================================
-
     @DeleteMapping("/{id}/remove-course/{courseId}")
     @PreAuthorize("hasRole('ADMIN')")
     public void removeCourse(
@@ -194,10 +157,6 @@ public class StudentController {
         );
     }
 
-
-    // =========================================================
-    // UPDATE PROFILE
-    // =========================================================
 
     @PutMapping("/update-profile")
     @PreAuthorize("hasRole('STUDENT')")
@@ -226,10 +185,6 @@ public class StudentController {
         }
     }
 
-
-    // =========================================================
-    // UPLOAD PROFILE PHOTO
-    // =========================================================
 
     @PostMapping("/upload-photo")
     @PreAuthorize("hasRole('STUDENT')")
@@ -262,10 +217,6 @@ public class StudentController {
     }
 
 
-    // =========================================================
-    // GET STUDENT BY EMAIL
-    // =========================================================
-
     @GetMapping("/email/{email}")
     @PreAuthorize("hasRole('ADMIN')")
     public StudentResponseDto getStudentByEmail(
@@ -275,10 +226,6 @@ public class StudentController {
         return studentService.getStudentByEmail(email);
     }
 
-
-    // =========================================================
-    // TOTAL STUDENTS
-    // =========================================================
 
     @GetMapping("/count")
     @PreAuthorize("hasRole('ADMIN')")

@@ -147,6 +147,15 @@ public class CourseService {
         semesters.forEach(s -> feeService.syncFeeForSemester((long) studentId, s));
     }
 
+    public Page<CourseResponseDto> getAvailableCoursesPaged(
+            Long departmentId,
+            Pageable pageable
+    ) {
+        return courseRepo
+                .findByDepartment_IdAndStatusIgnoreCase(departmentId, "ACTIVE", pageable)
+                .map(this::convertToDto);
+    }
+
     // calculate total courses
     public long getTotalCoursesCount() {
         return courseRepo.count();

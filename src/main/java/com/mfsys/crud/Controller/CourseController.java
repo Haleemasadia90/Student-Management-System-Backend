@@ -28,7 +28,7 @@ public class CourseController {
 
 
     @GetMapping
-    public List<CourseResponseDto> getAllCourses(@RequestParam(required = false) Long departmentId) {
+    public List<CourseResponseDto> getAllCourses(@RequestParam(required = true) Long departmentId) {
         if (departmentId != null) {
             return courseService.getCoursesByDepartment(departmentId);
         }
@@ -69,6 +69,20 @@ public long getTotalCourses() {
 }
 
 
+    // paginated active courses of a department (student "Available Courses")
+    @GetMapping("/available/paged")
+    public ResponseEntity<ApiResponse<Page<CourseResponseDto>>> getAvailableCourses(
+            @RequestParam Long departmentId,
+            @PageableDefault(size = 10, sort = "title", direction = Sort.Direction.ASC)
+            Pageable pageable) {
+
+        Page<CourseResponseDto> page =
+                courseService.getAvailableCoursesPaged(departmentId, pageable);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("SUCC_CRS_002",
+                        "Available courses fetched successfully", page));
+    }
 
 //paginator
 @GetMapping("/paged")

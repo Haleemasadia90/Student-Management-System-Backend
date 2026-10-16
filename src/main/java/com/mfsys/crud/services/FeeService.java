@@ -13,7 +13,8 @@ import com.mfsys.crud.dto.FeeSummaryDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -195,6 +196,32 @@ public class FeeService {
                 .map(this::convertToDto)
                 .toList();
     }
+
+    public Page<FeeResponseDto> getMyFeeBySemesterPaged(
+            String email,
+            String semester,
+            Pageable pageable
+    ) {
+        String validatedSemester = validateSemester(semester);
+
+        return feeRepo
+                .findByStudent_User_EmailAndSemesterIgnoreCase(
+                        email,
+                        validatedSemester,
+                        pageable
+                )
+                .map(this::convertToDto);
+    }
+
+    public Page<FeeResponseDto> getMyFeePaged(
+            String email,
+            Pageable pageable
+    ) {
+        return feeRepo
+                .findByStudent_User_Email(email, pageable)
+                .map(this::convertToDto);
+    }
+
 
     public List<FeeResponseDto> getMyFeeBySemester(String email, String semester) {
         String validatedSemester = validateSemester(semester);

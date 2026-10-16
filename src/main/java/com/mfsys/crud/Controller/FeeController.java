@@ -5,6 +5,9 @@ import com.mfsys.crud.dto.FeeResponseDto;
 import com.mfsys.crud.dto.FeeSummaryDto;
 import com.mfsys.crud.services.FeeService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -130,6 +133,23 @@ public FeeSummaryDto getOverallFeeSummary() {
     }
 
 
+    @GetMapping("/me/semester/paged")
+    @PreAuthorize("hasRole('STUDENT')")
+    public Page<FeeResponseDto> getMyFeeBySemesterPaged(
+            Authentication authentication,
+            @RequestParam String semester,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return feeService.getMyFeeBySemesterPaged(
+                authentication.getName(),
+                semester,
+                pageable
+        );
+    }
+
 
     @GetMapping("/me/semesters")
     @PreAuthorize("hasRole('STUDENT')")
@@ -146,5 +166,19 @@ public FeeSummaryDto getOverallFeeSummary() {
     @PreAuthorize("hasRole('ADMIN')")
     public Map<String, Integer> syncAll() {
         return Map.of("synced", feeService.syncAllFees());
+    }
+
+    @GetMapping("/me/paged")
+    @PreAuthorize("hasRole('STUDENT')")
+    public Page<FeeResponseDto> getMyFeesPaged(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        String email = authentication.getName();
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return feeService.getMyFeePaged(email, pageable);
     }
 }

@@ -1,6 +1,8 @@
 package com.mfsys.crud.Repository;
 
 import com.mfsys.crud.Entity.Fee;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -19,4 +21,12 @@ public interface FeeRepo extends JpaRepository<Fee, Long> {
     Optional<Fee> findByStudent_IdAndSemesterIgnoreCase(Long studentId, String semester);
 
     void deleteByStudent_Id(Long studentId);
+
+    Page<Fee> findByStudent_User_Email(String email, Pageable pageable);
+
+    Page<Fee> findByStudent_User_EmailAndSemesterIgnoreCase(
+            String email,
+            String semester,
+            Pageable pageable
+    );
 }

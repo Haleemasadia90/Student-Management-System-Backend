@@ -7,6 +7,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Table(
+        name = "fee",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_fee_student_semester",
+                        columnNames = {"student_id", "semester"}
+                )
+        }
+)
 public class Fee {
 
     @Id
@@ -19,6 +28,12 @@ public class Fee {
 
     @Column(nullable = false)
     private String semester;
+
+    @Column(nullable = false)
+    private double ratePerCreditHour;
+
+    @Column(nullable = false)
+    private double fixedSemesterCharge;
 
     @Column(nullable = false)
     private double totalFee;
